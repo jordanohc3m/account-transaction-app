@@ -1,0 +1,7 @@
+FROM azul/zulu-openjdk-alpine:11
+RUN addgroup -S runner && adduser -S runner -G runner
+USER runner:runner
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+

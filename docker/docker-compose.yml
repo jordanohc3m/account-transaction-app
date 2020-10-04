@@ -1,0 +1,29 @@
+version: "3.6"
+services:
+  account-app:
+    image: pismo/account-app:latest
+    container_name: account-app
+    ports:
+      - 8080:8080
+    depends_on:
+      - account-db
+    environment:
+      DATABASE_USERNAME: user-account
+      DATABASE_PASSWORD: pass-account
+      JDBC_URL: jdbc:mysql://account-db:3306/account
+    networks:
+      - account
+  account-db:
+    image: mysql:8.0.21
+    container_name: account-db
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: account
+      MYSQL_USER: user-account
+      MYSQL_PASSWORD: pass-account
+      MYSQL_ROOT_PASSWORD: account
+    networks:
+      - account
+networks:
+  account:
