@@ -2,7 +2,6 @@ package com.accounttransactions.controller;
 
 import com.accounttransactions.BaseTests;
 import com.accounttransactions.dto.TransactionDTO;
-import com.accounttransactions.repository.TransactionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
@@ -13,7 +12,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
@@ -24,13 +22,10 @@ import org.springframework.http.MediaType;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TransactionControllerTests extends BaseTests {
 
-    final ObjectMapper objectMapper = new ObjectMapper();
-
     @LocalServerPort
     private int port;
 
-    @Autowired
-    private TransactionRepository repository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
     public void init() {
@@ -40,7 +35,7 @@ class TransactionControllerTests extends BaseTests {
 
     @BeforeEach
     void setup() {
-        repository.deleteAll();
+        transactionRepository.deleteAll();
     }
 
     @Test

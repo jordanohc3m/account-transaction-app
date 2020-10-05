@@ -4,7 +4,6 @@ import com.accounttransactions.dto.TransactionDTO;
 import com.accounttransactions.entity.Account;
 import com.accounttransactions.repository.TransactionRepository;
 import com.accounttransactions.service.impl.AccountService;
-import com.accounttransactions.service.impl.OperationTypeService;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,9 +13,6 @@ public class BaseTests {
 
     @Autowired
     protected AccountService accountService;
-
-    @Autowired
-    protected OperationTypeService operationTypeService;
 
     @Autowired
     protected TransactionRepository transactionRepository;

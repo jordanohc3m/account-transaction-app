@@ -11,6 +11,13 @@ public class AccountDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public AccountDTO() {
+    }
+
+    public AccountDTO(String documentNumber) {
+        this.documentNumber = documentNumber;
+    }
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 

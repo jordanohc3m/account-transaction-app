@@ -7,6 +7,7 @@ import com.accounttransactions.entity.Transaction;
 import com.accounttransactions.exception.AccountNotFoundException;
 import com.accounttransactions.exception.GenericValidateRuntimeException;
 import com.accounttransactions.exception.InvalidOperationTypeException;
+import com.accounttransactions.service.impl.OperationTypeService;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -29,6 +30,9 @@ class TransactionServiceTests extends BaseTests {
 
     @Autowired
     private ITransactionService service;
+
+    @Autowired
+    protected OperationTypeService operationTypeService;
 
     private Account account;
 

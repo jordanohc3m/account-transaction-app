@@ -1,6 +1,7 @@
 package com.accounttransactions.controller;
 
 import com.accounttransactions.DatabaseInitializer;
+import com.accounttransactions.dto.AccountDTO;
 import com.accounttransactions.entity.Account;
 import com.accounttransactions.repository.AccountRepository;
 import com.accounttransactions.service.impl.AccountService;
@@ -39,9 +40,9 @@ class AccountControllerTests {
     @Autowired
     private AccountService service;
 
-    final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    final Account account = new Account(UUID.randomUUID().toString());
+    private final AccountDTO accountDTO = new AccountDTO(UUID.randomUUID().toString());
 
     @PostConstruct
     public void init() {
@@ -66,7 +67,7 @@ class AccountControllerTests {
 
     @Test
     void shouldReturnOneAccount() {
-        Account newAccount = service.create(account);
+        Account newAccount = service.create(accountDTO.toEntity());
 
         RestAssured.given()
                 .when()
@@ -82,7 +83,7 @@ class AccountControllerTests {
     @Test
     void shouldReturnOneAccountUsingPagination() {
 
-        Account account01 = service.create(account);
+        Account account01 = service.create(accountDTO.toEntity());
         Account account02 = service.create(new Account(UUID.randomUUID().toString()));
 
         service.create(new Account(UUID.randomUUID().toString()));
@@ -103,7 +104,7 @@ class AccountControllerTests {
     @Test
     void shouldReturnAAccount() {
 
-        Account newAccount = service.create(account);
+        Account newAccount = service.create(accountDTO.toEntity());
 
         RestAssured.given()
                 .pathParam("id", newAccount.getId())
@@ -129,7 +130,7 @@ class AccountControllerTests {
     @Test
     void shouldCreateAccount() throws JsonProcessingException {
         long id = RestAssured.given()
-                .body(objectMapper.writeValueAsString(account.toDto()))
+                .body(objectMapper.writeValueAsString(accountDTO))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/accounts")
