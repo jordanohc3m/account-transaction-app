@@ -43,9 +43,6 @@ public class AccountDTO implements Serializable {
 
 
     public Account toEntity() {
-        Account account = new Account();
-        account.setId(this.id);
-        account.setDocumentNumber(this.documentNumber);
-        return account;
+        return Account.builder().id(this.id).documentNumber(this.documentNumber).build();
     }
 }

@@ -84,10 +84,10 @@ class AccountControllerTests {
     void shouldReturnOneAccountUsingPagination() {
 
         Account account01 = service.create(accountDTO.toEntity());
-        Account account02 = service.create(new Account(UUID.randomUUID().toString()));
+        Account account02 = service.create(Account.builder().documentNumber(UUID.randomUUID().toString()).build());
 
-        service.create(new Account(UUID.randomUUID().toString()));
-        service.create(new Account(UUID.randomUUID().toString()));
+        service.create(Account.builder().documentNumber(UUID.randomUUID().toString()).build());
+        service.create(Account.builder().documentNumber(UUID.randomUUID().toString()).build());
 
         RestAssured.given()
                 .queryParam("size", 2)
@@ -153,7 +153,7 @@ class AccountControllerTests {
     @Test
     void shouldErrorCreateAccount() throws JsonProcessingException {
         RestAssured.given()
-                .body(objectMapper.writeValueAsString(new Account(null).toDto()))
+                .body(objectMapper.writeValueAsString(Account.builder().documentNumber(null).build().toDto()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/accounts")

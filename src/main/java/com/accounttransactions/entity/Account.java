@@ -6,16 +6,19 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "ACCOUNT")
 public class Account {
-
-    public Account() {
-    }
-
-    public Account(String documentNumber) {
-        this.documentNumber = documentNumber;
-    }
 
     @Id
     @Column(name = "ACCOUNT_ID")
@@ -24,24 +27,6 @@ public class Account {
 
     @Column(name = "DOCUMENT_NUMBER")
     private String documentNumber;
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDocumentNumber() {
-        return documentNumber;
-    }
-
-    public void setDocumentNumber(String documentNumber) {
-        this.documentNumber = documentNumber;
-    }
-
 
     public AccountDTO toDto() {
         AccountDTO accountDTO = new AccountDTO();

@@ -34,7 +34,9 @@ class TransactionServiceTests extends BaseTests {
     @Autowired
     protected OperationTypeService operationTypeService;
 
-    private Account account;
+    private Account validAccount;
+
+    private final Account invalidAccount = Account.builder().id(Long.valueOf(-1)).documentNumber(UUID.randomUUID().toString()).build();
 
     @BeforeEach
     void setup() {
@@ -43,10 +45,10 @@ class TransactionServiceTests extends BaseTests {
 
     @BeforeAll
     void prepare() {
-        account = accountService.create(new Account(UUID.randomUUID().toString()));
+        validAccount = accountService.create(Account.builder().documentNumber(UUID.randomUUID().toString()).build());
     }
 
-    private Transaction createRandomTransaction(Long operationTypeId) {
+    private Transaction createRandomTransaction(Long operationTypeId, Account account) {
         Transaction transaction = new Transaction();
         transaction.setAccount(account);
         transaction.setOperationType(operationTypeService.findByOperationTypeId(Long.valueOf(operationTypeId)).get());
@@ -56,7 +58,7 @@ class TransactionServiceTests extends BaseTests {
 
     @Test
     void createTransactionSuccess() {
-        Transaction transaction = createRandomTransaction(Long.valueOf(1));
+        Transaction transaction = createRandomTransaction(Long.valueOf(1), this.validAccount);
         Assertions.assertNotNull(transaction.getAumount());
         Assertions.assertNotNull(transaction.getEventDate());
     }
@@ -74,33 +76,52 @@ class TransactionServiceTests extends BaseTests {
 
     private Stream<Arguments> providerTransactionAumount() {
         return Stream.of(
-                Arguments.of(createRandomTransaction(Long.valueOf(1)), true),
-                Arguments.of(createRandomTransaction(Long.valueOf(2)), true),
-                Arguments.of(createRandomTransaction(Long.valueOf(3)), true),
-                Arguments.of(createRandomTransaction(Long.valueOf(4)), false));
+                Arguments.of(createRandomTransaction(Long.valueOf(1), validAccount), true),
+                Arguments.of(createRandomTransaction(Long.valueOf(2), validAccount), true),
+                Arguments.of(createRandomTransaction(Long.valueOf(3), validAccount), true),
+                Arguments.of(createRandomTransaction(Long.valueOf(4), validAccount), false));
     }
 
-    @Test
-    void createTransactionInvalidOperation() {
-        TransactionDTO transactionDTO = createRandomTransactionDto(Long.valueOf(5), new Random().nextDouble());
-        Transaction transaction = transactionDTO.toEntity();
-        Assertions.assertThrows(InvalidOperationTypeException.class, () -> service.create(transaction),"Invalid Operation Type");
+    @MethodSource("providerTransactionException")
+    @ParameterizedTest(name = "Expected: {1} for : {0}")
+    void shouldReturnTransactionException(RuntimeException input, String expected) {
+        // given
+        RuntimeException transaction = input;
+        // when
+        String output = transaction.getMessage();
+        // then
+        Assertions.assertEquals(expected, output);
     }
 
-    @Test
-    void createTransactionInvalidAccount() {
-        TransactionDTO transactionDTO = new TransactionDTO();
-        transactionDTO.setAccountId(new Random().nextLong());
-        transactionDTO.setOperationTypeId(Long.valueOf(4));
-        transactionDTO.setAumount(new Random().nextDouble());
-        Transaction transaction = transactionDTO.toEntity();
-        Assertions.assertThrows(AccountNotFoundException.class, () -> service.create(transaction),"Account not found");
+    private Stream<Arguments> providerTransactionException() {
+        return Stream.of(
+                Arguments.of(createTransactionInvalidThrow(), "Invalid Operation Type"),
+                Arguments.of(createTransactionInvalidAccount(), "Account not found")
+        );
+    }
+
+    private InvalidOperationTypeException createTransactionInvalidThrow() {
+        try {
+            service.create(createRandomTransactionDto(Long.valueOf(5), new Random().nextDouble()).toEntity());
+        } catch (InvalidOperationTypeException ex) {
+            return ex;
+        }
+        return null;
+    }
+
+    private AccountNotFoundException createTransactionInvalidAccount() {
+        try {
+            createRandomTransaction(Long.valueOf(4), invalidAccount);
+        } catch (AccountNotFoundException ex) {
+            return ex;
+        }
+        return null;
     }
 
     @Test
     void createTransactionInvalidValue() {
         TransactionDTO transactionDTO = createRandomTransactionDto(Long.valueOf(4), Double.valueOf(0));
         Transaction transaction = transactionDTO.toEntity();
-        Assertions.assertThrows(GenericValidateRuntimeException.class, () -> service.create(transaction),"Value must be different of zero");
+        Assertions.assertThrows(GenericValidateRuntimeException.class, () -> service.create(transaction), "Value must be different of zero");
     }
 }
