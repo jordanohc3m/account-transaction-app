@@ -1,7 +1,6 @@
 package com.accounttransactions.service;
 
 import com.accounttransactions.BaseTests;
-import com.accounttransactions.dto.TransactionDTO;
 import com.accounttransactions.entity.Account;
 import com.accounttransactions.entity.Transaction;
 import com.accounttransactions.exception.AccountNotFoundException;
@@ -84,19 +83,24 @@ class TransactionServiceTests extends BaseTests {
 
     @MethodSource("providerTransactionException")
     @ParameterizedTest(name = "Expected: {1} for : {0}")
-    void shouldReturnTransactionException(RuntimeException input, String expected) {
+    void shouldReturnTransactionException(RuntimeException input, String expectedMessage, String expectedClass) {
         // given
-        RuntimeException transaction = input;
+        RuntimeException runtimeException = input;
         // when
-        String output = transaction.getMessage();
+        String output = runtimeException.getMessage();
+        String outputClass = runtimeException.getClass().getSimpleName();
+
         // then
-        Assertions.assertEquals(expected, output);
+        Assertions.assertEquals(expectedMessage, output);
+        Assertions.assertEquals(expectedClass, outputClass);
+
     }
 
     private Stream<Arguments> providerTransactionException() {
         return Stream.of(
-                Arguments.of(createTransactionInvalidThrow(), "Invalid Operation Type"),
-                Arguments.of(createTransactionInvalidAccount(), "Account not found")
+                Arguments.of(createTransactionInvalidThrow(), "Invalid Operation Type", InvalidOperationTypeException.class.getSimpleName()),
+                Arguments.of(createTransactionInvalidAccount(), "Account not found", AccountNotFoundException.class.getSimpleName()),
+                Arguments.of(createTransactionInvalidValue(), "Value must be different of zero", GenericValidateRuntimeException.class.getSimpleName())
         );
     }
 
@@ -118,10 +122,12 @@ class TransactionServiceTests extends BaseTests {
         return null;
     }
 
-    @Test
-    void createTransactionInvalidValue() {
-        TransactionDTO transactionDTO = createRandomTransactionDto(Long.valueOf(4), Double.valueOf(0));
-        Transaction transaction = transactionDTO.toEntity();
-        Assertions.assertThrows(GenericValidateRuntimeException.class, () -> service.create(transaction), "Value must be different of zero");
+    private GenericValidateRuntimeException createTransactionInvalidValue() {
+        try {
+            service.create(createRandomTransactionDto(Long.valueOf(4), Double.valueOf(0)).toEntity());
+        } catch (GenericValidateRuntimeException ex) {
+            return ex;
+        }
+        return null;
     }
 }
