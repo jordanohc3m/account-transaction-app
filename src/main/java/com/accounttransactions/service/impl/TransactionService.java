@@ -38,6 +38,7 @@ public class TransactionService implements ITransactionService {
     public Transaction create(Transaction transaction) {
         prepareTransaction(transaction);
         LOGGER.info("Registring new Transaction for account: {}. ", transaction.getAccount().getId());
+        accountCreditLimitUpdate(transaction);
         return repository.saveAndFlush(transaction);
     }
 
@@ -45,6 +46,7 @@ public class TransactionService implements ITransactionService {
         validateZeroValue(transaction.getAumount());
         fillAccount(transaction.getAccount().getId());
         transaction.setOperationType(fillValidateOperationType(transaction.getOperationType().getId()));
+        validateCreditLimit(transaction);
         validateValuesWithOperation(transaction);
         validateSameOperation(transaction);
     }
@@ -83,5 +85,17 @@ public class TransactionService implements ITransactionService {
                 transaction.getAumount(),
                 transaction.getOperationType()).isPresent())
             throw new GenericValidateRuntimeException("The same operation for the same Account is processing less than 5 seconds");
+    }
+
+    private void validateCreditLimit(Transaction transaction) {
+        Double creditLimit = transaction.getAccount().getCreditLimit();
+        if ((Objects.equals(transaction.getOperationType().getType(), Constants.NEGATIVE)) && (creditLimit - transaction.getAumount()) < 0)
+            throw new GenericValidateRuntimeException("Invalid operation, limit is not available");
+    }
+
+    private void accountCreditLimitUpdate(Transaction transaction) {
+        Double amount = transaction.getAumount();
+        Double creditLimit = transaction.getAccount().getCreditLimit() - amount;
+        transaction.getAccount().setCreditLimit(creditLimit);
     }
 }

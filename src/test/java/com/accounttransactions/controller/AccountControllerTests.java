@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import org.hamcrest.Matchers;
@@ -42,7 +43,7 @@ class AccountControllerTests {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final AccountDTO accountDTO = new AccountDTO(UUID.randomUUID().toString());
+    private final AccountDTO accountDTO = new AccountDTO(UUID.randomUUID().toString(), new Random().nextDouble());
 
     @PostConstruct
     public void init() {

@@ -43,7 +43,9 @@ class TransactionServiceTests extends BaseTests {
 
     @BeforeAll
     void prepare() {
-        account = accountService.create(new Account(UUID.randomUUID().toString()));
+        account = new Account(UUID.randomUUID().toString());
+        account.setCreditLimit(Double.valueOf(1000000));
+        account = accountService.create(account);
     }
 
     private Transaction createRandomTransaction(Long operationTypeId) {
@@ -52,6 +54,14 @@ class TransactionServiceTests extends BaseTests {
         transaction.setOperationType(operationTypeService.findByOperationTypeId(Long.valueOf(operationTypeId)).get());
         transaction.setAumount(new Random().nextDouble());
         return service.create(transaction);
+    }
+
+    private Transaction createRandomTransaction(Long operationTypeId, Double amount, Account account) {
+        Transaction transaction = new Transaction();
+        transaction.setAccount(account);
+        transaction.setOperationType(operationTypeService.findByOperationTypeId(Long.valueOf(operationTypeId)).get());
+        transaction.setAumount(amount);
+        return transaction;
     }
 
     @Test
@@ -103,4 +113,15 @@ class TransactionServiceTests extends BaseTests {
         Transaction transaction = transactionDTO.toEntity();
         Assertions.assertThrows(GenericValidateRuntimeException.class, () -> service.create(transaction),"Value must be different of zero");
     }
+
+    @Test
+    void createTransactionInvalidCreditLimit() {
+        Account account = new Account();
+        account.setCreditLimit(Double.valueOf(100));
+        account.setDocumentNumber("1234-1234-1234");
+        account = accountService.create(account);
+        Transaction transaction = createRandomTransaction(Long.valueOf(1), Double.valueOf(1000), account);
+        Assertions.assertThrows(GenericValidateRuntimeException.class, () -> service.create(transaction),"Invalid operation, limit is not available");
+    }
+
 }
