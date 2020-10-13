@@ -1,8 +1,6 @@
 package com.accounttransactions.service.impl;
 
 import com.accounttransactions.constants.Constants;
-import com.accounttransactions.entity.Account;
-import com.accounttransactions.entity.OperationType;
 import com.accounttransactions.entity.Transaction;
 import com.accounttransactions.exception.AccountNotFoundException;
 import com.accounttransactions.exception.GenericValidateRuntimeException;
@@ -44,8 +42,8 @@ public class TransactionService implements ITransactionService {
 
     private void prepareTransaction(Transaction transaction){
         validateZeroValue(transaction.getAumount());
-        fillAccount(transaction.getAccount().getId());
-        transaction.setOperationType(fillValidateOperationType(transaction.getOperationType().getId()));
+        fillValidateOperationType(transaction);
+        fillAccount(transaction);
         validateCreditLimit(transaction);
         validateValuesWithOperation(transaction);
         validateSameOperation(transaction);
@@ -65,12 +63,14 @@ public class TransactionService implements ITransactionService {
         return aumont > 0;
     }
 
-    private Account fillAccount(Long id) {
-        return accountService.findByAccountId(id).orElseThrow(AccountNotFoundException::new);
+    private void fillAccount(Transaction transaction) {
+        transaction.setAccount(accountService.findByAccountId(transaction.getAccount().getId())
+                .orElseThrow(AccountNotFoundException::new));
     }
 
-    private OperationType fillValidateOperationType(Long operationTypeId) {
-        return operationTypeService.findByOperationTypeId(operationTypeId).orElseThrow(InvalidOperationTypeException::new);
+    private void fillValidateOperationType(Transaction transaction) {
+        transaction.setOperationType(operationTypeService.findByOperationTypeId(transaction.getOperationType().getId())
+                .orElseThrow(InvalidOperationTypeException::new));
     }
 
     private void validateZeroValue(Double aumount) {
@@ -94,8 +94,10 @@ public class TransactionService implements ITransactionService {
     }
 
     private void accountCreditLimitUpdate(Transaction transaction) {
-        Double amount = transaction.getAumount();
-        Double creditLimit = transaction.getAccount().getCreditLimit() - amount;
-        transaction.getAccount().setCreditLimit(creditLimit);
+        if (Objects.equals(transaction.getOperationType().getType(), Constants.NEGATIVE)) {
+            Double amount = transaction.getAumount();
+            Double creditLimit = transaction.getAccount().getCreditLimit() - amount;
+            transaction.getAccount().setCreditLimit(creditLimit);
+        }
     }
 }
