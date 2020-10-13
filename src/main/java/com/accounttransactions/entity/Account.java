@@ -15,8 +15,9 @@ public class Account {
     public Account() {
     }
 
-    public Account(String documentNumber) {
+    public Account(String documentNumber, Double creditLimit) {
         this.documentNumber = documentNumber;
+        this.creditLimit = creditLimit;
     }
 
     @Id

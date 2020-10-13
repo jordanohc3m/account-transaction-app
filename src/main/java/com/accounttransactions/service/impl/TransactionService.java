@@ -96,7 +96,7 @@ public class TransactionService implements ITransactionService {
     private void accountCreditLimitUpdate(Transaction transaction) {
         if (Objects.equals(transaction.getOperationType().getType(), Constants.NEGATIVE)) {
             Double amount = transaction.getAumount();
-            Double creditLimit = transaction.getAccount().getCreditLimit() - amount;
+            Double creditLimit = transaction.getAccount().getCreditLimit() - Math.abs(amount);
             transaction.getAccount().setCreditLimit(creditLimit);
         }
     }

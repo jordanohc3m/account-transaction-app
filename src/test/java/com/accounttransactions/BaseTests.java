@@ -19,7 +19,7 @@ public class BaseTests {
 
     protected TransactionDTO createRandomTransactionDto(Long operationTypeId, Double aumount) {
         TransactionDTO transaction = new TransactionDTO();
-        transaction.setAccountId(accountService.create(new Account(UUID.randomUUID().toString())).getId());
+        transaction.setAccountId(accountService.create(new Account(UUID.randomUUID().toString(), (aumount * 2))).getId());
         transaction.setOperationTypeId(operationTypeId);
         transaction.setAumount(aumount);
         return transaction;

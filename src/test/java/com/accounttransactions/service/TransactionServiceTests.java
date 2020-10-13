@@ -43,8 +43,7 @@ class TransactionServiceTests extends BaseTests {
 
     @BeforeAll
     void prepare() {
-        account = new Account(UUID.randomUUID().toString());
-        account.setCreditLimit(Double.valueOf(1000000));
+        account = new Account(UUID.randomUUID().toString(), Double.valueOf(1000000));
         account = accountService.create(account);
     }
 

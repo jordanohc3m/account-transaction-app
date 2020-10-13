@@ -41,7 +41,7 @@ class TransactionControllerTests extends BaseTests {
     @Test
     void shouldCreateTransaction() throws JsonProcessingException {
 
-        final TransactionDTO transaction = createRandomTransactionDto(Long.valueOf(1), new Random().nextDouble());
+        final TransactionDTO transaction = createRandomTransactionDto(Long.valueOf(1), Double.valueOf(1000));
 
         RestAssured.given()
                 .body(objectMapper.writeValueAsString(transaction))
