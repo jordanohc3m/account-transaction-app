@@ -1,0 +1,112 @@
+{
+	"info": {
+		"_postman_id": "68539748-5600-4e01-ae3c-ae4ce90ff867",
+		"name": "account-transaction",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "8225852"
+	},
+	"item": [
+		{
+			"name": "create-account",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"document_number\":\"2\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/accounts",
+				"description": "Generated from cURL: curl -X POST \"http://localhost:8080/accounts\" -H \"accept: application/json\" -H \"Content-Type: application/json\" -d \"{\\\"document_number\\\":\\\"2\\\"}\""
+			},
+			"response": []
+		},
+		{
+			"name": "get-accounts",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/accounts?size=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl -X GET \"http://localhost:8080/accounts?size=10\" -H \"accept: */*\""
+			},
+			"response": []
+		},
+		{
+			"name": "get-accounts",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": "http://localhost:8080/accounts/2",
+				"description": "Generated from cURL: curl -X GET \"http://localhost:8080/accounts/2\" -H \"accept: application/json\""
+			},
+			"response": []
+		},
+		{
+			"name": "create-transaction",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"aumount\":10,\"account_id\":2,\"operation_type_id\":1}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/transactions",
+				"description": "Generated from cURL: curl -X POST \"http://localhost:8080/transactions\" -H \"accept: application/json\" -H \"Content-Type: application/json\" -d \"{\\\"aumount\\\":10,\\\"account_id\\\":2,\\\"operation_type_id\\\":1}\""
+			},
+			"response": []
+		}
+	]
+}
